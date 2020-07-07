@@ -15,7 +15,7 @@ import string
 VOWELS = 'aeiou'
 CONSONANTS = 'bcdfghjklmnpqrstvwxyz'
 HAND_SIZE = 7
-
+n = HAND_SIZE
 SCRABBLE_LETTER_VALUES = {
     'a': 1, 'b': 3, 'c': 3, 'd': 2, 'e': 1, 'f': 4, 'g': 2, 'h': 4, 'i': 1, 'j': 8, 'k': 5, 'l': 1, 'm': 3, 'n': 1, 'o': 1, 'p': 3, 'q': 10, 'r': 1, 's': 1, 't': 1, 'u': 1, 'v': 4, 'w': 4, 'x': 8, 'y': 4, 'z': 10, '*': 0
 }
@@ -167,10 +167,19 @@ def play_hand(hand, word_list):
 
     word = ''
     Total_score = 0
+    k = 0
 
     while calculate_handlen(hand) > 0 and word != "!!":
 
         print("Current hand: " + ' '.join(display_hand(hand)))
+
+        if k < 1:
+            z = input("Would you like to substitute a letter? ")
+            if z == 'yes' or z == 'y':
+                subsletter = input('Which letter would you like to replace: ')
+                hand = substitute_hand(hand, subsletter)
+                k = 1
+
         word = input('Enter word, or "!!" to indicate that you are finished: ')
 
         if word == "!!":
@@ -190,25 +199,48 @@ def play_hand(hand, word_list):
 
             print("That is not a valid word. Please choose another word.")
 
-        print("Total score: " + str(Total_score) + " points.")
+    return Total_score
 
+def substitute_hand(hand, subsletter):
 
-def substitute_hand(hand, letter):
+    s = string.ascii_lowercase
 
-    pass
+    for letter in display_hand(hand):
+        s = s.replace(letter, '')
+
+    hand[random.choice(s)] = hand[subsletter]
+    hand[subsletter] = hand.get(subsletter, 0) - hand[subsletter]
+
+    new_hand1 = hand.copy()
+
+    for k, v in new_hand1.items():
+        if v == 0:
+            del hand[k]
+
+    return hand
 
 
 def play_game(word_list):
 
-    print("play_game not implemented.")
+    x = int(input('Enter total number of hands: '))
+    Total_score = 0
+    k = 0
+    for y in range(0, x):
+        hand = deal_hand(n)
+        score = play_hand(hand, word_list)
+        print("Total score for this hand: " + str(score))
+        w = input("Would you like to replay the hand ? ")
+        if w == 'yes' or w == 'y':
+            score = play_hand(hand, word_list)
+            print("Total score for this hand : " + str(score))
+
+        Total_score = score + Total_score
+
+    print("Total score: " + str(Total_score) + " points.")
+
+    return Total_score
 
 
 if __name__ == '__main__':
     word_list = load_words()
     play_game(word_list)
-
-
-n = 7
-hand = deal_hand(n)
-
-play_hand(hand, word_list)
